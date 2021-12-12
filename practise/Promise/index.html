@@ -12,34 +12,71 @@
   </header>
   <script src="./index.js"></script>
   <script>
-    // 参数是函数(executor)
-    // 参数函数的参数是两个函数(resolve, reject)
-    let p1 = new Promise(function (resolve, reject) {
-      setTimeout(() => {
-        resolve(100)
-        // reject(0)
-      }, 1000)
-    });
+    (function () {
+      let p1 = new Promise(function (resolve, reject) {
+        setTimeout(() => {
+          resolve(100)
+          // reject(0)
+        }, 1000)
+      });
 
-    console.log('====', 1);
+      p1.then(function onfulfilled (value) {
+        console.log('test1===成功1===', value);
+      }, function onrejected (reason) {
+        console.log('test1===失败1===', reason);
+      })
 
-    p1.then(function onfulfilled (value) {
-      console.log('成功1===', value);
-    }, function onrejected (reason) {
-      console.log('失败1===', reason);
-    })
+      p1.then(function onfulfilled (value) {
+        console.log('test1===成功2===', value);
+      }, function onrejected (reason) {
+        console.log('test1===失败2===', reason);
+      })
 
-    p1.then(function onfulfilled (value) {
-      console.log('成功2===', value);
-    }, function onrejected (reason) {
-      console.log('失败2===', reason);
-    })
+      p1.then(function onfulfilled (value) {
+        console.log('test1===成功3===', value);
+      }, function onrejected (reason) {
+        console.log('test1===失败3===', reason);
+      })
+    })();
+  </script>
+  <script>
+    (function () {
+      // 参数是函数(executor)
+      // 参数函数的参数是两个函数(resolve, reject)
+      let p1 = new Promise(function (resolve, reject) {
+        setTimeout(() => {
+          resolve(100)
+          // reject(0)
+        }, 1000)
+      });
 
-    p1.then(function onfulfilled (value) {
-      console.log('成功3===', value);
-    }, function onrejected (reason) {
-      console.log('失败3===', reason);
-    })
+      let p2 = p1.then(function onfulfilled (value) {
+        console.log('test2===成功1===', value);
+        // return 'p1 then resolve return';
+        return new Promise(function (resolve, reject) {
+          reject(0)
+        })
+      }, function onrejected (reason) {
+        console.log('test2===失败1===', reason);
+        return 'p1 then reject return';
+      })
+
+      let p3 = p2.then(function onfulfilled (value) {
+        console.log('test2===成功2===', value);
+        return 'p2 then resolve return';
+      }, function onrejected (reason) {
+        console.log('test2===失败2===', reason);
+        return 'p2 then reject return';
+      })
+
+      p3.then(function onfulfilled (value) {
+        console.log('test2===成功3===', value);
+        return 'p3 then resolve return';
+      }, function onrejected (reason) {
+        console.log('test2===失败3===', reason);
+        return 'p3 then reject return';
+      })
+    })();
   </script>
 </body>
 </html>

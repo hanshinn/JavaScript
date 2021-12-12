@@ -53,6 +53,28 @@ function Promise (executor) {
 
 // 需要向原型上扩展方法 then、catch，供实例调用
 // 原型重定向
+/**
+ * @param { Function } callback onfulfilled|onrejected
+ * @param { any } value 执行上述某个方法传递的值
+ * @param { Promise } promise .then 返回的新的 Promise 实例
+ * @param { Function } resolve 方法执行可以修改 promise 的状态和值
+ * @param { Function } reject 方法执行可以修改 promise 的状态和值
+ */
+var handle = function handle (callback, value, promise, resolve, reject) {
+  try {
+    // 获取执行结果
+    var result = callback(value);
+    // 看执行结果是不是 Promise 实例
+    // 如果执行结果是 Promise 实例
+    if (result instanceof Promise) {
+      result.then(resolve, reject);
+      return;
+    }
+    resolve(result);
+  } catch (err) {
+    reject(err);
+  }
+}
 Promise.prototype = {
   // 原型重定向后，新对象没有 constructor 属性指向当前构造函数本身了，需要手动增加
   constructor: Promise,
@@ -61,23 +83,33 @@ Promise.prototype = {
     // 第一类：.then 的时候已经知道实例的状态，此时构建一个“异步微任务”，执行对应的方法(onfulfilled/onrejected)即可
     // 第二类：.then 的时候还不知道实例的状态，此时需要将onfulfilled/onrejected先存储起来，后期状态改变后通知对应方法执行，只不过此时也是一个“异步微任务”
     // 在不使用 queueMicrotask 这个方法的时候，无法创建异步微任务，所以可以拿定时器模拟一个异步宏任务来代替微任务
-    var self = this;
-    switch (self.state) {
-      case 'fulfilled':
-        setTimeout(function () {
-          onfulfilled(self.value);
-        });
-        break;
-      case 'rejected':
-        setTimeout(function () {
-          onrejected(self.value);
-        });
-        break;
-      default:
-        self.onfulfilledCallbacks.push(onfulfilled);
-        self.onrejectedCallbacks.push(onrejected);
-        break;
-    }
+    var self = this
+        promise = null;
+    // then 需要返回一个新的 Promise 实例
+    promise = new Promise(function (resolve, reject) {
+      // resolve 执行：promise 就是成功的。reject 执行：promise 就是失败的。
+      switch (self.state) {
+        case 'fulfilled':
+          setTimeout(function () {
+            handle(onfulfilled, self.value, promise,resolve, reject);
+          });
+          break;
+        case 'rejected':
+          setTimeout(function () {
+            handle(onrejected, self.value, promise,resolve, reject);
+          });
+          break;
+        default:
+          self.onfulfilledCallbacks.push(function (value) {
+            handle(onfulfilled, value, promise,resolve, reject);
+          });
+          self.onrejectedCallbacks.push(function (reason) {
+            handle(onrejected, reason, promise,resolve, reject);
+          });
+          break;
+      }
+    });
+    return promise;
   },
   catch: function my_catch () {
     // catch 是关键词，不能作为函数变量名（可以作为属性名）
