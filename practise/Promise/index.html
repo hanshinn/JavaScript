@@ -41,8 +41,6 @@
   </script>
   <script>
     (function () {
-      // 参数是函数(executor)
-      // 参数函数的参数是两个函数(resolve, reject)
       let p1 = new Promise(function (resolve, reject) {
         setTimeout(() => {
           resolve(100)
@@ -53,9 +51,8 @@
       let p2 = p1.then(function onfulfilled (value) {
         console.log('test2===成功1===', value);
         // return 'p1 then resolve return';
-        return new Promise(function (resolve, reject) {
-          reject(0)
-        })
+        // return Promise.reject(0);
+        return p2;
       }, function onrejected (reason) {
         console.log('test2===失败1===', reason);
         return 'p1 then reject return';
