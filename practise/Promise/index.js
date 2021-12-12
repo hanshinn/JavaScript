@@ -166,6 +166,17 @@
   // Symbol.toStringTag 向原型上加这个属性时，必须保证 Symbol 存在
   if (typeof Symbol !== 'undefined') Promise.prototype[Symbol.toStringTag] = 'Promise';
 
+
+  // 验证是否为一个符合规范的 promise 实例
+  var isPromise = function isPromise (x) {
+    if (x !== null && /^(object|function)$/i.test(typeof x)) {
+      if (typeof x.then === 'function') {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // 当做对象扩展的静态私有方法：工具类方法
   // - 执行 resolve 就是返回一个 状态为成功, 值为 value 的 Promise 实例
   Promise.resolve = function resolve(value) {
@@ -180,7 +191,30 @@
       reject(value);
     });
   }
-  Promise.all = function all() { }
+  Promise.all = function all(promises) {
+    if (!Array.isArray(promises)) throw new TypeError('promises must be an Array');
+    var n = 0,
+        results = [];
+    return new Promise(function (resolve, reject) {
+      for (var i = 0; i < promises.length; i++) {
+        // 由于执行是异步的，需要用闭包把 i 存起来，否则会出错
+        // 用 let 可以不用处理，但是这里都用的 ES5，为了兼容
+        (function (i) {
+          var promise = promises[i];
+          // 如果不是 Promise 实例，需要调整为一个 Promise 实例
+          if (!isPromise(promise)) promise = Promise.resolve(promise);
+          promise.then(function onfulfilled (value) {
+            n++;
+            // 结果存放起来，并且顺序必须是对应的，跟谁先执行完成没有关系
+            results[i] = value;
+            if (n >= promises.length) resolve(results);
+          }).catch(function onrejected (reason) {
+            reject(reason);
+          });
+        })(i);
+      }
+    });
+  }
 
   // 暴露API
   if (typeof window !== 'undefined') window.Promise = Promise;
