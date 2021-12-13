@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator</title>
+</head>
+<body>
+  <header>
+    <h1>Generator</h1>
+  </header>
+  <script src="./index.js"></script>
+  <script>
+    (function () {
+      let gen = generator();
+      console.log(gen);
+      console.log(gen.__proto__);
+      console.log(gen instanceof generator); // true
+      console.log(({}).toString.call(gen)); // "[object Generator]"
+    })();
+  </script>
+  <script>
+    (function () {
+      console.log('------1-----');
+      let gen = generator();
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+    })();
+  </script>
+
+  <script>
+    (function () {
+      console.log('------2-----');
+      let gen = generator();
+      console.log(gen.next());
+      console.log(gen.return('return'));
+      console.log(gen.next());
+    })();
+  </script>
+
+  <script>
+    (function () {
+      console.log('------3-----');
+      let gen = generator();
+      console.log(gen.next());
+      console.log(gen.throw('throw11'));
+      console.log(gen.next());
+    })();
+  </script>
+
+  <script>
+    (function () {
+      console.log('------4-----');
+      let gen = generator();
+      console.log(gen.next(1));
+      console.log(gen.next(2));
+      console.log(gen.next(3));
+      console.log(gen.next(4));
+      console.log(gen.next(5));
+    })();
+  </script>
+
+  <script>
+    (function () {
+      console.log('------5-----');
+      let gen = generator2();
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+    })();
+  </script>
+
+  <script>
+    (function () {
+      console.log('------6-----');
+      let gen = generator4();
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+      console.log(gen.next());
+    })();
+  </script>
+</body>
+</html>
