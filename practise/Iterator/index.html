@@ -21,5 +21,38 @@
       console.log(itor.next());
     })();
   </script>
+  <script>
+    (function () {
+      let arr = [1, 2, 3, 4];
+      for (let value of arr) {
+        console.log(value);
+      }
+    })();
+  </script>
+  <script>
+    (function () {
+      let obj = {
+        'a': 'a1',
+        'b': 'b1',
+        'c': 'c1'
+      }
+      for (let value of obj) {
+        console.log(value);
+      }
+    })();
+  </script>
+  <script>
+    (function () {
+      let obj = {
+        0: 0,
+        1: 1,
+        length: 2
+      }
+      obj[Symbol.iterator] = Array.prototype[Symbol.iterator]
+      for (let value of obj) {
+        console.log(value);
+      }
+    })();
+  </script>
 </body>
 </html>
