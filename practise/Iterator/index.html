@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iterator</title>
+</head>
+<body>
+  <header>
+    <h1>Iterator</h1>
+  </header>
+  <script src="./index.js"></script>
+  <script>
+    (function () {
+      let itor = new Iterator([1, 2, 3, 4]);
+      console.log('000');
+      console.log('itor.next()', itor.next());
+      console.log('itor.next()', itor.next());
+      console.log('itor.next()', itor.next());
+      console.log('itor.next()', itor.next());
+      console.log('itor.next()', itor.next());
+    })();
+  </script>
+</body>
+</html>
